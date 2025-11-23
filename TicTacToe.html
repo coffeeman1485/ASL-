@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tic Tac Toe</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: Arial, sans-serif; background: #f7f7f7; display: flex; flex-direction: column; align-items: center; }
+        h1 { margin-top: 30px; }
+        #board { display: grid; grid-template-columns: repeat(3, 80px); grid-gap: 0; margin: 30px 0; }
+        .cell {
+            width: 80px; height: 80px; background: #fff; border-radius: 0; box-shadow: none;
+            font-size: 2.5em; display: flex; align-items: center; justify-content: center; cursor: pointer;
+            border: 2px solid #333;
+        }
+        .cell.x { color: #003366; }
+        .cell.o { color: #006400; }
+        .cell img { width: 48px; height: 48px; }
+        #status { margin-bottom: 20px; font-size: 1.2em; }
+        #resetBtn { padding: 8px 16px; font-size: 1em; border: none; background: #0078d7; color: #fff; border-radius: 5px; cursor: pointer; }
+        #qr { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Tic Tac Toe</h1>
+    <div id="status">Player X's turn</div>
+    <div id="board"></div>
+    <button id="resetBtn">Reset Game</button>
+    <div id="qr"></div>
+    <script>
+        const board = document.getElementById('board');
+        const status = document.getElementById('status');
+        let cells = Array(9).fill('');
+        let currentPlayer = 'X';
+        let gameActive = true;
+
+        function renderBoard() {
+            board.innerHTML = '';
+            cells.forEach((cell, i) => {
+                const div = document.createElement('div');
+                div.className = 'cell';
+                if (cell === 'X') {
+                    div.classList.add('x');
+                    div.innerHTML = `<img src="https://media.istockphoto.com/id/960235388/photo/american-sign-language-x.jpg?s=612x612&w=0&k=20&c=z5oHzEVw-wMsU8vEGwnQ5kFohJCRyuS_ajtUHwd8Pug=" alt="ASL X">`;
+                } else if (cell === 'O') {
+                    div.classList.add('o');
+                    div.innerHTML = `<img src="https://static.vecteezy.com/system/resources/previews/027/394/980/original/letter-o-in-american-sign-language-asl-for-deaf-people-photo.jpg" alt="ASL O">`;
+                }
+                div.onclick = () => handleMove(i);
+                board.appendChild(div);
+            });
+        }
+
+        function handleMove(i) {
+            if (!gameActive || cells[i]) return;
+            cells[i] = currentPlayer;
+            renderBoard();
+            if (checkWin(currentPlayer)) {
+                status.textContent = `Player ${currentPlayer} wins!`;
+                gameActive = false;
+            } else if (cells.every(cell => cell)) {
+                status.textContent = "It's a draw!";
+                gameActive = false;
+            } else {
+                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                status.textContent = `Player ${currentPlayer}'s turn`;
+            }
+        }
+
+        function checkWin(player) {
+            const wins = [
+                [0,1,2],[3,4,5],[6,7,8],
+                [0,3,6],[1,4,7],[2,5,8],
+                [0,4,8],[2,4,6]
+            ];
+            return wins.some(line => line.every(idx => cells[idx] === player));
+        }
+
+        function resetGame() {
+            cells = Array(9).fill('');
+            currentPlayer = 'X';
+            gameActive = true;
+            status.textContent = "Player X's turn";
+            renderBoard();
+        }
+
+        renderBoard();
+        document.getElementById('resetBtn').onclick = resetGame;
+    </script>
+</body>
+</html>
